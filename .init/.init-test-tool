@@ -1,0 +1,4 @@
+{
+    "command": "npm run test",
+    "working_directory": "/home/kavia/workspace/code-generation/realtime-social-feed-139198-139207/feed_frontend"
+}
