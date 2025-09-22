@@ -1,49 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
+import { SessionProvider, useSession } from './context/SessionContext';
+import FeedPage from './pages/FeedPage';
+import ProfilePage from './pages/ProfilePage';
+import ModerationPage from './pages/ModerationPage';
+import AuthPage from './pages/AuthPage';
+import Layout from './components/Layout';
 
 // PUBLIC_INTERFACE
-function App() {
-  const [theme, setTheme] = useState('light');
-
-  // Effect to apply theme to document element
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
-
-  // PUBLIC_INTERFACE
-  const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
-  };
-
+export default function App() {
+  /** Root app with session provider and routing */
   return (
-    <div className="App">
-      <header className="App-header">
-        <button 
-          className="theme-toggle" 
-          onClick={toggleTheme}
-          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-        >
-          {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
-        </button>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <p>
-          Current theme: <strong>{theme}</strong>
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <SessionProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </SessionProvider>
   );
 }
 
-export default App;
+function AppRoutes() {
+  const { session, loading } = useSession();
+
+  if (loading) {
+    return <div style={{ display: 'grid', placeItems: 'center', height: '100vh' }}>Loading…</div>;
+  }
+
+  return (
+    <Routes>
+      {!session ? (
+        <>
+          <Route path="/auth" element={<AuthPage />} />
+          <Route path="*" element={<Navigate to="/auth" replace />} />
+        </>
+      ) : (
+        <>
+          <Route element={<Layout />}>
+            <Route index element={<FeedPage />} />
+            <Route path="/profile/:id" element={<ProfilePage />} />
+            <Route path="/moderation" element={<ModerationPage />} />
+          </Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </>
+      )}
+    </Routes>
+  );
+}
