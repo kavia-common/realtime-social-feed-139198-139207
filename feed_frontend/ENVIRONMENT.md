@@ -6,6 +6,22 @@ Required variables (set via deployment environment, do not commit secrets):
 
 These are mapped to your Supabase project.
 
+Where to put .env (development):
+- Create a file feed_frontend/.env using .env.example as a template.
+- Add your values:
+  REACT_APP_SUPABASE_URL=...
+  REACT_APP_SUPABASE_KEY=...
+- Stop and restart the dev server after any changes to .env. CRA does not hot-reload env files.
+
+Production/CI:
+- Set the same variables in your deployment environment prior to building the app (they are compiled at build time).
+
+Troubleshooting:
+- If you see "Supabase client initialization failed" or "supabaseUrl is required":
+  1) Confirm feed_frontend/.env exists and contains REACT_APP_SUPABASE_URL and REACT_APP_SUPABASE_KEY.
+  2) Ensure you restarted `npm start` after editing .env.
+  3) Avoid setting variables inline in npm scripts; CRA reads env at process start.
+
 # Supabase schema expectations
 
 Tables:
